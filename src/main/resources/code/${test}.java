@@ -1,5 +1,5 @@
 package hello;
 
-class Test {
-    public ${test} ${test1};
+class ${test} {
+    public String ${test1};
 }
