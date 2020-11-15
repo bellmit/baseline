@@ -1,5 +1,6 @@
 package org.benrush.util;
 
+import cn.hutool.core.io.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.benrush.MainApplication;
 
@@ -16,7 +17,7 @@ public class ConfigUtil {
     private static final Properties properties = new Properties();
 
     static {
-        InputStream in = MainApplication.class.getResourceAsStream("/application.properties");
+        InputStream in = FileUtil.getInputStream("application.properties");
         try {
             properties.load(in);
         } catch (IOException e) {

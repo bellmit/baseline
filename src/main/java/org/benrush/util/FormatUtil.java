@@ -1,11 +1,14 @@
 package org.benrush.util;
 
-import lombok.Data;
+import org.benrush.common.BaseLineException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FormatUtil {
+    private FormatUtil(){
+
+    }
     /**
      * 下划线转驼峰法
      *
@@ -20,7 +23,7 @@ public class FormatUtil {
         char[] charArray = line.toCharArray();
         // 判断上次循环的字符是否是"_"
         boolean underlineBefore = false;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         for (int i = 0, l = charArray.length; i < l; i++) {
             // 判断当前字符是否是"_",如果跳出本次循环
             if (charArray[i] == 95) {
@@ -117,7 +120,7 @@ public class FormatUtil {
                     //新的位置已经变化了，因为字符串的长度发生了变化
                     return new Iter(builder.toString(), i + value.length());
                 }else{
-                    throw new RuntimeException("格式解析错误");
+                    throw new BaseLineException("格式解析错误");
                 }
             }
         }
