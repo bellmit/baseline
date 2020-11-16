@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${project.groupId}.${project.artifactId}.server.persistence.mapper.GeMapper">
+    <resultMap id="BaseMap" type="org.benrush.server.persistence.po.GePo">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="v" jdbcType="VARCHAR" property="v"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime"/>
+        <result column="deleted" jdbcType="BOOL" property="deleted"/>
+    </resultMap>
+    <sql id="BaseColumnList">
+        id, v, create_time, modify_time, deleted
+    </sql>
+
+</mapper>
