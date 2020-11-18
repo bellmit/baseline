@@ -6,9 +6,7 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.benrush.baseline.util.ConfigUtil;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +36,7 @@ public class DatabaseConnector {
 
     private Connection connection;
 
-    DatabaseConnector() {
+    public DatabaseConnector() {
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(url, username, password);
@@ -65,7 +63,7 @@ public class DatabaseConnector {
      * @author: 刘希晨
      * @date: 2020/11/12 15:14
      */
-    public Map<String, ColumnInfo> queryAllTables(String tableName) throws SQLException {
+    public Map<String, ColumnInfo> queryTableColumns(String tableName) throws SQLException {
         PreparedStatement preparedStatement = connection.prepareStatement(queryAllTableInfo);
         preparedStatement.setString(1, schema);
         preparedStatement.setString(2, tableName);
@@ -77,6 +75,7 @@ public class DatabaseConnector {
             columnInfo.setUdtName(resultSet.getString("udt_name"));//字段类型
             columnInfo.setMaxLength(resultSet.getString("character_maximum_length")); //可能为空
             columnInfo.setComment(resultSet.getString("column_comment"));//可能未注释
+            result.put(column,columnInfo);
         }
         preparedStatement.close();
         resultSet.close();
@@ -104,30 +103,22 @@ public class DatabaseConnector {
         throw new RuntimeException("数据库中未找到表" + tableName);
     }
 
-    public void runScript(List<String> scriptName) throws IOException {
+    public void runScript() throws IOException {
+        File[] sqls = FileUtil.ls(FileUtil.getAbsolutePath("sql"));
         // 创建ScriptRunner，用于执行SQL脚本
         ScriptRunner runner = new ScriptRunner(connection);
         PrintWriter printWriter = new PrintWriter(System.out);
         runner.setLogWriter(printWriter);
-        // 执行SQL脚本
-        for (String script : scriptName) {
-            runner.runScript(Resources.getResourceAsReader("sql/" + script));
-            log.info("数据库脚本 " + scriptName + " 运行成功");
+        // 执行sql文件夹下的所有SQL脚本
+        for (File sql : sqls) {
+            Reader sqlReader = new FileReader(sql);
+            log.info("准备执行脚本 " + sql.getName());
+            runner.runScript(sqlReader);
+            log.info("数据库脚本 " + sql.getName() + " 运行成功");
         }
     }
 
-    public void runALlScript() {
-        File[] sqlFiles = FileUtil.ls(this.getClass().getClassLoader().getResource("sql").getPath());
-        List<String> sqlFileNames = new ArrayList<>();
-        for (File file : sqlFiles) {
-            sqlFileNames.add(file.getName());
-        }
-        try {
-            runScript(sqlFileNames);
-        } catch (IOException e) {
-            log.error("数据库脚本运行出错，请检查sql");
-            e.printStackTrace();
-        }
-    }
+
+
 
 }

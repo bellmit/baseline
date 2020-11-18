@@ -1,10 +1,12 @@
 package org.benrush.baseline.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.benrush.baseline.common.BaseLineException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class FormatUtil {
     private FormatUtil(){
 
@@ -120,6 +122,7 @@ public class FormatUtil {
                     //新的位置已经变化了，因为字符串的长度发生了变化
                     return new Iter(builder.toString(), i + value.length());
                 }else{
+                    log.info(line);
                     throw new BaseLineException("格式解析错误");
                 }
             }
