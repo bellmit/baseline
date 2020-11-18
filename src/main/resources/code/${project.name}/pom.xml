@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>${project.name}-api</module>
-        <module>${project.name}-server</module>
+        <module>project-api</module>
+        <module>project-server</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -13,10 +13,10 @@
         <version>2.3.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>${project.groupId}</groupId>
-    <artifactId>${project.artifactId}</artifactId>
+    <groupId>org.benrush</groupId>
+    <artifactId>generator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>${project.name}</name>
+    <name>generator</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
