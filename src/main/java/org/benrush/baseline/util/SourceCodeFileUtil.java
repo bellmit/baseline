@@ -22,6 +22,8 @@ public class SourceCodeFileUtil {
 
     private static final String PROJECT_NAME = "${project.name}";
 
+
+
     //true表示覆盖，false表示追加
     private static final Boolean OVERWIRTE = Integer.valueOf(ConfigUtil.getConfig(Constants.MODE))==0;
 
@@ -29,16 +31,12 @@ public class SourceCodeFileUtil {
 
     }
 
-    public static void test() throws IOException {
-        System.out.println(SOURCE_CODE_LOCATION);
-    }
-
     /**
      * @Description: 构建代码项目
      * @author: 刘希晨
      * @date:  2020/11/17 17:38
      */
-    public static void constructProgram() throws IOException {
+    public static void constructProgramSkeleton() throws IOException {
         File root = new File(OUTPUT_LOCATION);
         if(!FileUtil.isDirectory(root)){
             throw new BaseLineException("输出目的地并不是文件夹");

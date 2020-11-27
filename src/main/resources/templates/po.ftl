@@ -11,12 +11,14 @@ import ${project.groupId}.${project.name}.server.common.orm.BasePo;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ApiModel("${tableComment}")
-public class ${tableClass}Po extends BasePo {
+public class ${poName} extends BasePo {
 
 <#list poItemList as poItem>
+    <#if poItem.comment??>
     /**
     * ${poItem.comment}
     */
+    </#if>
     private ${poItem.javaType} ${poItem.propertyName};
 
 </#list>

@@ -8,10 +8,7 @@ import org.benrush.baseline.util.ConfigUtil;
 
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class DatabaseConnector {
@@ -26,12 +23,12 @@ public class DatabaseConnector {
             "WHERE table_schema = ? " +
             "and table_name = ?";
 
-    private final String queryTableComment = "SELECT n.nspname as \"Schema\"," +
-            "  c.relname as \"Name\"," +
-            "  pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid)) as \"Size\"," +
-            "  pg_catalog.obj_description(c.oid, 'pg_class') as \"Description\"" +
-            "FROM pg_catalog.pg_class c" +
-            "     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace" +
+    private final String queryTableComment = "SELECT n.nspname as table_schema,\n" +
+            "  c.relname as  table_name,\n" +
+            "  pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid)) as  table_size,\n" +
+            "  pg_catalog.obj_description(c.oid, 'pg_class') as  table_description\n" +
+            "FROM pg_catalog.pg_class c\n" +
+            "     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace\n" +
             "WHERE c.relname = ?";
 
     private Connection connection;
@@ -68,13 +65,15 @@ public class DatabaseConnector {
         preparedStatement.setString(1, schema);
         preparedStatement.setString(2, tableName);
         ResultSet resultSet = preparedStatement.executeQuery();
-        Map<String, ColumnInfo> result = new HashMap<>();
+        //表字段名称 到 字段信息 的映射,保持顺序
+        Map<String, ColumnInfo> result = new LinkedHashMap<>();
         while (resultSet.next()) {
             String column = resultSet.getString("column_name");//字段的名称
             ColumnInfo columnInfo = new ColumnInfo();
             columnInfo.setUdtName(resultSet.getString("udt_name"));//字段类型
             columnInfo.setMaxLength(resultSet.getString("character_maximum_length")); //可能为空
             columnInfo.setComment(resultSet.getString("column_comment"));//可能未注释
+            log.info(columnInfo.toString());
             result.put(column,columnInfo);
         }
         preparedStatement.close();
@@ -93,9 +92,9 @@ public class DatabaseConnector {
         ResultSet resultSet = preparedStatement.executeQuery();
         Map<String, ColumnInfo> result = new HashMap<>();
         while (resultSet.next()) {
-            if (resultSet.getString("Schema").equals(schema)) {
-                log.info("导入{}表,大小为{}", resultSet.getString("Name"), resultSet.getString("Size"));
-                return resultSet.getString("Description");
+            if (resultSet.getString("table_schema").equals(schema)) {
+                log.info("导入{}表,大小为{}", resultSet.getString("table_name"), resultSet.getString("table_size"));
+                return resultSet.getString("table_description");
             }
         }
         preparedStatement.close();

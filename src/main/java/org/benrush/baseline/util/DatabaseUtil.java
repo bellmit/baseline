@@ -34,8 +34,10 @@ public class DatabaseUtil {
 
     private static final String prefix = ConfigUtil.getConfig(Constants.PREFIX);
 
+    private static final DatabaseConnector connector = new DatabaseConnector();
+
     static{
-        DatabaseConnector connector = new DatabaseConnector();
+        //如果mode为0，运行数据库脚本
         if(mode.equals(0)){
             try {
                 connector.runScript();
@@ -47,7 +49,9 @@ public class DatabaseUtil {
         //载入表字段类型信息和注释信息
         for(String table : tables){
             try {
+                //获取表字段信息
                 Map<String, ColumnInfo> columnInfoMap = connector.queryTableColumns(table);
+                //获取表注释信息
                 String tableComment = connector.queryTableComment(table);
                 List<PoItem> poItemList = new ArrayList<>();
                 for(Map.Entry<String,ColumnInfo> entry : columnInfoMap.entrySet()){
@@ -56,7 +60,8 @@ public class DatabaseUtil {
                     PoItem poItem = new PoItem();
                     poItem.setComment(columnInfo.getComment());
                     poItem.setJavaType(getJavaType(columnInfo.getUdtName()));
-                    poItem.setPropertyName(propertyName);
+                    //下划线转驼峰
+                    poItem.setPropertyName(FormatUtil.underline2Camel(propertyName));
                     poItemList.add(poItem);
                 }
                 poColumnInfo.put(table,poItemList);
@@ -69,9 +74,13 @@ public class DatabaseUtil {
         connector.close();
     }
 
+    public static String[] getTables(){
+        return tables;
+    }
+
     public static String getJavaType(String type){
         if(type.equals(DatabaseConstants.JSON) || type.equals(DatabaseConstants.JSONB) || type.equals(DatabaseConstants.VARCHAR)) {
-            return "Boolean";
+            return "String";
         }else if(type.equals(DatabaseConstants.TIMESTAMP)){
             return "LocalDateTime";
         }else if(type.equals(DatabaseConstants.INT2)){
